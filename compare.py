@@ -292,6 +292,18 @@ def normalize_image_path(value: object) -> object:
         return text
     path = Path(text)
     if path.is_absolute():
+        if path.exists():
+            return str(path)
+        normalized_text = text.replace("\\", "/")
+        marker = "streamlit/project/"
+        if marker in normalized_text:
+            relative_tail = normalized_text.split(marker, 1)[1]
+            candidate = (APP_DIR / relative_tail).resolve()
+            return str(candidate)
+        if "ev_compare_dashboard/" in normalized_text:
+            relative_tail = normalized_text.split("ev_compare_dashboard/", 1)[1]
+            candidate = (APP_DIR / "ev_compare_dashboard" / relative_tail).resolve()
+            return str(candidate)
         return str(path)
     return str((APP_DIR / path).resolve())
 
